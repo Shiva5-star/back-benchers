@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FuelGo - Tracking</title>
+<style>
+body{text-align:center;padding-top:100px;font-family:Arial;}
+.bar{width:0;height:20px;background:green;}
+.container{width:80%;background:#ddd;margin:auto;}
+</style>
+</head>
+<body>
+
+<h2>Live Tracking</h2>
+<p id="status">Preparing...</p>
+<div class="container">
+<div class="bar" id="progress"></div>
+</div>
+
+<script>
+var width=0;
+var bar=document.getElementById("progress");
+var status=document.getElementById("status");
+
+var interval=setInterval(function(){
+if(width>=100){
+clearInterval(interval);
+status.innerHTML="Delivered Successfully!";
+}else{
+width+=10;
+bar.style.width=width+"%";
+}
+},1000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<style>
+body{font-family:Arial;text-align:center;padding-top:50px;}
+table{margin:auto;border-collapse:collapse;}
+td,th{border:1px solid black;padding:8px;}
+</style>
+</head>
+<body>
+
+<h2>Admin Order History</h2>
+
+<table>
+<tr>
+<th>Vehicle</th>
+<th>Quality</th>
+<th>Quantity</th>
+<th>Total</th>
+</tr>
+<tr>
+<td id="v"></td>
+<td id="q"></td>
+<td id="qt"></td>
+<td id="t"></td>
+</tr>
+</table>
+
+<script>
+document.getElementById("v").innerHTML=localStorage.getItem("vehicle");
+document.getElementById("q").innerHTML=localStorage.getItem("fuelQuality");
+document.getElementById("qt").innerHTML=localStorage.getItem("quantity")+" L";
+document.getElementById("t").innerHTML="₹ "+localStorage.getItem("total");
+</script>
+
+</body>
+</html>

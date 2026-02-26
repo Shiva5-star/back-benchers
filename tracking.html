@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FuelGo - Smart Live Tracking</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(120deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    text-align:center;
+}
+
+h2{ margin-top:40px; }
+
+.card{
+    background: rgba(255,255,255,0.1);
+    width:85%;
+    margin:30px auto;
+    padding:25px;
+    border-radius:15px;
+    backdrop-filter: blur(10px);
+}
+
+.progress-container{
+    width:100%;
+    background:#444;
+    border-radius:30px;
+    overflow:hidden;
+    margin-top:20px;
+}
+
+.progress-bar{
+    height:20px;
+    width:0%;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    transition:0.4s;
+}
+
+button{
+    margin-top:20px;
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    background:#00c6ff;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#0072ff;
+    transform:scale(1.05);
+}
+
+.stars{
+    display:none;
+    margin-top:25px;
+    font-size:32px;
+    cursor:pointer;
+}
+
+.star{
+    color:gray;
+}
+
+.star.active{
+    color:gold;
+}
+
+/* Thank You Section */
+.thankyou{
+    display:none;
+    margin-top:30px;
+    padding:20px;
+    background: linear-gradient(135deg,#00c6ff,#0072ff);
+    border-radius:15px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.thankyou h2{
+    font-weight:700;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body onload="loadOrder()">
+
+<h2>⛽🚛 FuelGo Live Delivery Tracker</h2>
+<h3 id="status">🕒 Waiting to Start...</h3>
+
+<div class="card">
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <button onclick="startTracking()">▶️ Start Delivery</button>
+    <br>
+    <button onclick="generatePDF()">📄 Show Bill PDF to Delivery Boy</button>
+
+    <!-- Rating Section -->
+    <div class="stars" id="ratingSection">
+        <h3>⭐ Rate Your Delivery Experience</h3>
+        <span class="star" onclick="rate(1)">★</span>
+        <span class="star" onclick="rate(2)">★</span>
+        <span class="star" onclick="rate(3)">★</span>
+        <span class="star" onclick="rate(4)">★</span>
+        <span class="star" onclick="rate(5)">★</span>
+        <p id="ratingResult"></p>
+    </div>
+
+    <!-- Thank You Section -->
+    <div class="thankyou" id="thankyouSection">
+        <h2>🎉 Thank You for Choosing FuelGo!</h2>
+        <p>We appreciate your trust 💙</p>
+        <button onclick="bookAgain()">🔁 Book Again</button>
+    </div>
+
+</div>
+
+<script>
+
+var fuel, qty;
+var pricePerLitre = 110;
+var totalAmount;
+var deliveryCompleted = false;
+var billGenerated = false;
+
+function loadOrder(){
+    fuel = localStorage.getItem("fuelType");
+    qty = parseFloat(localStorage.getItem("quantity"));
+    totalAmount = qty * pricePerLitre;
+}
+
+function startTracking(){
+
+    var progressBar = document.getElementById("progressBar");
+    var statusText = document.getElementById("status");
+
+    var progress = 0;
+
+    var interval = setInterval(function(){
+
+        progress += 10;
+        progressBar.style.width = progress + "%";
+
+        if(progress == 30){
+            statusText.innerHTML = "🚚 Order Dispatched...";
+        }
+        if(progress == 60){
+            statusText.innerHTML = "📍 Driver Near Your Location...";
+        }
+        if(progress >= 100){
+            clearInterval(interval);
+            statusText.innerHTML = "✅ Fuel Delivered Successfully 🎉";
+            deliveryCompleted = true;
+            checkRatingVisibility();
+        }
+
+    }, 600);
+}
+
+function generatePDF(){
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("FuelGo Delivery Bill", 20, 20);
+
+    doc.setFontSize(14);
+    doc.text("Fuel Type: " + fuel, 20, 40);
+    doc.text("Quantity: " + qty + " Litres", 20, 50);
+    doc.text("Price per Litre: ₹" + pricePerLitre, 20, 60);
+    doc.text("Total Amount: ₹" + totalAmount, 20, 70);
+
+    doc.text("Status: Delivered Successfully", 20, 90);
+
+    doc.save("FuelGo_Bill.pdf");
+
+    billGenerated = true;
+    checkRatingVisibility();
+}
+
+function checkRatingVisibility(){
+    if(deliveryCompleted && billGenerated){
+        document.getElementById("ratingSection").style.display = "block";
+    }
+}
+
+function rate(starCount){
+
+    var stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, index) => {
+        if(index < starCount){
+            star.classList.add("active");
+        } else {
+            star.classList.remove("active");
+        }
+    });
+
+    document.getElementById("ratingResult").innerHTML =
+        "Thank you for rating us " + starCount + " ⭐!";
+
+    // Show Thank You Section
+    document.getElementById("thankyouSection").style.display = "block";
+}
+
+function bookAgain(){
+    window.location.href = "index.html"; // change if your booking page name is different
+}
+
+</script>
+
+</body>
+</html>

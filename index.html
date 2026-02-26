@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuelGo - Login</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:white;
+    width:350px;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    text-align:center;
+}
+
+.logo{
+    width:100px;
+    margin-bottom:15px;
+}
+
+input, select{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:14px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:#1e3c72;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#16325c;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="C:\Users\NIKHIL\OneDrive\Desktop\img.png" class="logo" alt="FuelGo Logo">
+<h2>FuelGo Login</h2>
+
+<input type="text" id="username" placeholder="Username">
+<input type="tel" id="phone" placeholder="Enter Phone Number" maxlength="10">
+
+<select id="fuelType">
+<option value="">Select Fuel Type</option>
+<option>Petrol</option>
+<option>Diesel</option>
+<option>CNG</option>
+</select>
+
+<select id="fuelQuality">
+<option value="">Select Fuel Quality</option>
+<option>Regular</option>
+<option>Premium</option>
+</select>
+
+<input type="number" id="quantity" placeholder="Enter Quantity (Litres)">
+<input type="text" id="vehicle" placeholder="Vehicle Number">
+
+<input type="date" id="deliveryDate">
+
+<select id="hour">
+<option value="">Hour</option>
+</select>
+
+<select id="minute">
+<option value="">Minute</option>
+</select>
+
+<select id="ampm">
+<option value="">AM / PM</option>
+<option value="AM">AM</option>
+<option value="PM">PM</option>
+</select>
+
+<button onclick="proceed()">Proceed</button>
+
+</div>
+
+<script>
+
+// Populate Hour & Minute
+for(let i=1;i<=12;i++){
+    let h = i<10 ? "0"+i : i;
+    document.getElementById("hour").innerHTML += 
+        `<option value="${h}">${h}</option>`;
+}
+
+for(let i=0;i<60;i++){
+    let m = i<10 ? "0"+i : i;
+    document.getElementById("minute").innerHTML += 
+        `<option value="${m}">${m}</option>`;
+}
+
+function proceed(){
+
+let username = document.getElementById("username").value.trim();
+let phone = document.getElementById("phone").value.trim();
+let fuelType = document.getElementById("fuelType").value;
+let quality = document.getElementById("fuelQuality").value;
+let quantity = document.getElementById("quantity").value;
+let vehicle = document.getElementById("vehicle").value.toUpperCase();
+let deliveryDate = document.getElementById("deliveryDate").value;
+let hour = document.getElementById("hour").value;
+let minute = document.getElementById("minute").value;
+let ampm = document.getElementById("ampm").value;
+
+if(!username || !phone || !fuelType || !quality || !quantity || 
+   !vehicle || !deliveryDate || !hour || !minute || !ampm){
+    alert("Please fill all details!");
+    return;
+}
+
+if(phone.length !== 10 || isNaN(phone)){
+    alert("Enter valid 10-digit phone number");
+    return;
+}
+
+if(quantity <= 0){
+    alert("Quantity must be greater than 0");
+    return;
+}
+
+// Convert to 24-hour format
+hour = parseInt(hour);
+
+if(ampm === "PM" && hour !== 12) hour += 12;
+if(ampm === "AM" && hour === 12) hour = 0;
+
+let hourFormatted = hour < 10 ? "0"+hour : hour;
+let selectedDateTime = new Date(`${deliveryDate}T${hourFormatted}:${minute}`);
+let now = new Date();
+
+if(selectedDateTime <= now){
+    alert("Select future delivery date & time");
+    return;
+}
+
+// Save Data
+localStorage.setItem("username", username);
+localStorage.setItem("phone", phone);
+localStorage.setItem("fuelType", fuelType);
+localStorage.setItem("fuelQuality", quality);
+localStorage.setItem("quantity", quantity);
+localStorage.setItem("vehicle", vehicle);
+localStorage.setItem("deliveryDate", deliveryDate);
+localStorage.setItem("deliveryTime", hourFormatted + ":" + minute);
+
+window.location.href = "summary.html";
+}
+</script>
+
+</body>
+</html>

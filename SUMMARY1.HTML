@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FuelGo - Final Bill</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body{
+font-family:Arial;
+text-align:center;
+padding-top:50px;
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+color:white;
+}
+.card{
+background:white;
+color:black;
+width:350px;
+margin:auto;
+padding:20px;
+border-radius:15px;
+box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
+button{
+padding:10px;
+margin:8px;
+background:#1e3c72;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+h2{margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2>🧾 FuelGo Final Bill</h2>
+<p id="details"></p>
+<button onclick="downloadPDF()">📥 Download Bill</button>
+<button onclick="goPayment()">💳 Proceed to Payment</button>
+</div>
+
+<script>
+
+var quality=localStorage.getItem("fuelQuality");
+var quantity=parseFloat(localStorage.getItem("quantity"));
+var vehicle=localStorage.getItem("vehicle");
+
+var price=(quality=="Premium")?110:100;
+var subtotal=price*quantity;
+var gst=subtotal*0.05;
+var total=subtotal+gst;
+
+document.getElementById("details").innerHTML=
+"⛽ Fuel Type: "+quality+"<br>"+
+"🚗 Vehicle: "+vehicle+"<br>"+
+"📦 Quantity: "+quantity+" L<br><hr>"+
+"💰 Price per Litre: ₹"+price+"<br>"+
+"🧾 Subtotal: ₹"+subtotal.toFixed(2)+"<br>"+
+"📊 GST (5%): ₹"+gst.toFixed(2)+"<br><hr>"+
+"<b>💵 Total: ₹"+total.toFixed(2)+"</b>";
+
+localStorage.setItem("total",total.toFixed(2));
+
+function goPayment(){
+window.location.href="payment.html";
+}
+
+async function downloadPDF(){
+const { jsPDF }=window.jspdf;
+const doc=new jsPDF();
+doc.text("FuelGo Bill",20,20);
+doc.text("Fuel: "+quality,20,30);
+doc.text("Vehicle: "+vehicle,20,40);
+doc.text("Quantity: "+quantity+" L",20,50);
+doc.text("Total: ₹"+total.toFixed(2),20,60);
+doc.save("FuelGo_Bill.pdf");
+}
+
+</script>
+
+</body>
+</html>

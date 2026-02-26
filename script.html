@@ -1,0 +1,14 @@
+<script>
+function saveOrder(){
+
+    var fuel = document.getElementById("fuel").value;
+    var qty = document.getElementById("qty").value;
+    var price = document.getElementById("price").value;
+
+    localStorage.setItem("fuelType", fuel);
+    localStorage.setItem("quantity", qty);
+    localStorage.setItem("price", price);
+
+    window.location.href = "tracking.html";
+}
+</script>
